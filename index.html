@@ -13,7 +13,6 @@
         html,body{height:100%;overflow-y:auto !important;overflow-x:hidden}
         body{background:#f0f5f0;padding-bottom:100px;min-height:100vh}
 
-        /* ===== HEADER CON FONDO DE MEDICAMENTOS ===== */
         .header{
             position:fixed;top:0;left:0;right:0;z-index:1000;
             height:130px;padding:6px 15px 4px;
@@ -24,7 +23,6 @@
             box-shadow:0 4px 20px rgba(0,0,0,0.3);
             overflow:hidden;
         }
-        /* Capa de degradado para legibilidad */
         .header::before{
             content:'';
             position:absolute;top:0;left:0;right:0;bottom:0;
@@ -47,7 +45,6 @@
             border:none;
             position:relative;
             flex-shrink:0;
-            /* 🔥 ELIMINA EL FONDO DEL LOGO */
             mix-blend-mode: multiply;
         }
         .header-logo-wrap img{
@@ -57,7 +54,6 @@
             border:none;
             outline:none;
             background:transparent;
-            /* 🔥 QUITA CUALQUIER FONDO RESIDUAL */
             filter: brightness(1.05) contrast(1.1);
         }
         .header-title{text-align:center;color:#2d2a24;flex:1;min-width:0}
@@ -213,49 +209,58 @@
         .sync-status.show{display:block}
         .sync-status.success{background:#1a8a4a;box-shadow:0 4px 15px rgba(26,138,74,0.5)}
         .sync-status.error{background:#e74c3c;box-shadow:0 4px 15px rgba(231,76,60,0.5)}
-        @media(max-width:400px){.products{grid-template-columns:repeat(2,1fr);gap:10px;padding:12px}
-        .header-logo-wrap img{height:60px}
-        .header{height:100px;padding:4px 8px;gap:4px}
-        .header-spacer{height:100px}
-        .header-title h1{font-size:16px}
-        .header-title p{font-size:10px}
-        .header-title .whatsapp-number{font-size:9px;padding:1px 8px}
-        .header-phone-big{font-size:13px}
-        .share-btn{padding:4px 8px;font-size:10px}
-        .share-btn span{display:none}
-        .categories-wrapper{top:100px;padding:4px 0;min-height:38px}
-        .categories{padding:0 10px;min-height:28px;gap:5px}
-        .categories-spacer{height:38px}
-        .cat-btn{padding:3px 10px;font-size:10px;height:26px;border-radius:8px}
-        .cat-btn .cat-count{font-size:8px;padding:0 5px;height:14px}
-        .search-bar{top:138px;min-height:32px;padding:4px 10px}
-        .search-spacer{height:32px}
-        .search-bar input{padding:4px 10px;font-size:11px}
-        .phone-group{flex-direction:column}
-        .phone-group .btn-buscar{width:100%}
-        .admin-modal .modal{max-width:95%;margin:10px auto;padding:15px}
-        .admin-modal .row{grid-template-columns:1fr}
-        .modal{max-height:95vh;padding:15px;border-radius:16px}
-        .modal-overlay{padding-top:20px;align-items:flex-start}
-        .cart-item .qty-control button{width:26px;height:26px;font-size:14px}
-        .cart-item .item-remove{font-size:17px}
-        .checkout-modal .checkout-header .close-checkout{font-size:24px}}
-        @media(min-width:401px) and (max-width:600px){.header-logo-wrap img{height:70px}
-        .header{height:110px}
-        .header-spacer{height:110px}
-        .header-title h1{font-size:19px}
-        .categories-wrapper{top:110px}
-        .search-bar{top:158px}}
-        @media(min-width:601px){.products{grid-template-columns:repeat(3,1fr)}
-        .header-logo-wrap img{height:110px}
-        .header{height:130px}
-        .header-spacer{height:130px}
-        .categories-wrapper{top:130px}
-        .search-bar{top:178px}}
-        @media(min-width:900px){.products{grid-template-columns:repeat(4,1fr);max-width:1100px;margin:0 auto}
-        .categories{justify-content:center;gap:10px;padding:0 20px}
-        .admin-modal .modal{max-width:700px}
-        .checkout-modal .modal{max-width:500px}}
+
+        @media(max-width:400px){
+            .products{grid-template-columns:repeat(2,1fr);gap:10px;padding:12px}
+            .header-logo-wrap img{height:95px !important}
+            .header{height:120px;padding:4px 8px;gap:4px}
+            .header-spacer{height:120px}
+            .header-title h1{font-size:16px}
+            .header-title p{font-size:10px}
+            .header-title .whatsapp-number{font-size:9px;padding:1px 8px}
+            .header-phone-big{font-size:13px}
+            .share-btn{padding:4px 8px;font-size:10px}
+            .share-btn span{display:none}
+            .categories-wrapper{top:120px;padding:4px 0;min-height:38px}
+            .categories{padding:0 10px;min-height:28px;gap:5px}
+            .categories-spacer{height:38px}
+            .cat-btn{padding:3px 10px;font-size:10px;height:26px;border-radius:8px}
+            .cat-btn .cat-count{font-size:8px;padding:0 5px;height:14px}
+            .search-bar{top:158px;min-height:32px;padding:4px 10px}
+            .search-spacer{height:32px}
+            .search-bar input{padding:4px 10px;font-size:11px}
+            .phone-group{flex-direction:column}
+            .phone-group .btn-buscar{width:100%}
+            .admin-modal .modal{max-width:95%;margin:10px auto;padding:15px}
+            .admin-modal .row{grid-template-columns:1fr}
+            .modal{max-height:95vh;padding:15px;border-radius:16px}
+            .modal-overlay{padding-top:20px;align-items:flex-start}
+            .cart-item .qty-control button{width:26px;height:26px;font-size:14px}
+            .cart-item .item-remove{font-size:17px}
+            .checkout-modal .checkout-header .close-checkout{font-size:24px}
+        }
+        @media(min-width:401px) and (max-width:600px){
+            .header-logo-wrap img{height:100px !important}
+            .header{height:125px}
+            .header-spacer{height:125px}
+            .header-title h1{font-size:19px}
+            .categories-wrapper{top:125px}
+            .search-bar{top:173px}
+        }
+        @media(min-width:601px){
+            .products{grid-template-columns:repeat(3,1fr)}
+            .header-logo-wrap img{height:110px}
+            .header{height:130px}
+            .header-spacer{height:130px}
+            .categories-wrapper{top:130px}
+            .search-bar{top:178px}
+        }
+        @media(min-width:900px){
+            .products{grid-template-columns:repeat(4,1fr);max-width:1100px;margin:0 auto}
+            .categories{justify-content:center;gap:10px;padding:0 20px}
+            .admin-modal .modal{max-width:700px}
+            .checkout-modal .modal{max-width:500px}
+        }
     </style>
 </head>
 <body>
@@ -289,7 +294,6 @@
     <div class="admin-hint" id="adminHint">🔐 5 clics en el logo para administrar</div>
     <div id="toast" class="toast"></div>
 
-    <!-- Resto del código igual (categorías, productos, carrito, etc.) -->
     <div class="categories-wrapper">
         <div class="categories" id="categoriesContainer"></div>
     </div>
@@ -311,8 +315,7 @@
         <span class="total" id="cartTotal">$0</span>
     </button>
 
-    <!-- Modales y resto del JavaScript igual que antes -->
-
+    <!-- ===== MODALES ===== -->
     <div class="modal-overlay" id="cartModal">
         <div class="modal">
             <div class="modal-header">
@@ -413,6 +416,7 @@
         </div>
     </div>
 
+    <!-- ===== ADMIN MODAL ===== -->
     <div class="modal-overlay admin-modal" id="adminModal">
         <div class="modal">
             <div class="admin-header">
@@ -478,7 +482,8 @@
 
                 <div class="help-text">
                     <strong>📌 Acceso:</strong> 5 clics en el logo · Contraseña: <strong>admin123</strong><br />
-                    <strong>📸 Imágenes:</strong> Puedes subir fotos desde tu PC o celular al agregar un producto (opcional).
+                    <strong>📸 Imágenes:</strong> Puedes subir fotos desde tu PC o celular al agregar un producto (opcional).<br />
+                    <strong>☁️ Supabase:</strong> Los datos se sincronizan automáticamente con la nube.
                 </div>
             </div>
         </div>
@@ -502,15 +507,17 @@
         // ================================================================
         // CONFIGURACIÓN SUPABASE - FARMA KAI
         // ================================================================
-        const SUPABASE_URL = 'https://cleideovxwrfqogwbpwl.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_J2uG3_9SeR4VAWei9w_7bA_2WXxsSQ5';
+        const SUPABASE_URL = 'https://rvvvlrbtmhfbkygzcebw.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2dnZscmJ0bWhmYmt5Z3pjZWJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1MTY1NDYsImV4cCI6MjEwMTA5MjU0Nn0.k6ESlnDOcDK3P469wQlstwYs4v3pBRVQ3nNBC32pzok';
+        
         let supabaseClient = null;
         try {
             if (window.supabase) {
                 supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                console.log('✅ Supabase conectado correctamente');
             }
         } catch(e) {
-            console.error('Supabase no pudo cargar, usando modo local.', e);
+            console.error('❌ Error al conectar Supabase:', e);
         }
 
         const CONFIG = {
@@ -520,7 +527,7 @@
         };
 
         // ================================================================
-        // COSTO DE ENVÍO MANUAL
+        // COSTO DE ENVÍO
         // ================================================================
         let costoEnvio = 0;
 
@@ -545,6 +552,7 @@
                 actualizarEnvioUI();
                 showToast('✅ Costo de envío actualizado a $' + costoEnvio.toFixed(2));
                 renderOrderList();
+                sincronizarDatos(); // Forzar sincronización inmediata
             } catch(e) {}
         }
 
@@ -556,7 +564,7 @@
         }
 
         // ================================================================
-        // SISTEMA DE SINCRONIZACIÓN CON SUPABASE
+        // SINCRONIZACIÓN AUTOMÁTICA CON SUPABASE
         // ================================================================
         let syncInProgress = false;
         let pendingSync = false;
@@ -571,7 +579,7 @@
             el._timeout = setTimeout(() => {
                 el.classList.remove('show');
                 el.className = 'sync-status';
-            }, 4000);
+            }, 6000);
         }
 
         async function sincronizarDatos() {
@@ -608,7 +616,8 @@
                 }
             } catch (err) {
                 console.error('❌ Error al sincronizar:', err);
-                mostrarSync('⚠️ Error: ' + err.message, 'error');
+                let errMsg = err.message || 'Error desconocido';
+                mostrarSync('⚠️ Error: ' + errMsg, 'error');
                 syncInProgress = false;
                 if (pendingSync) {
                     pendingSync = false;
@@ -665,12 +674,13 @@
                     }
                     return true;
                 } else {
-                    mostrarSync('ℹ️ Usando datos locales', 'error');
+                    mostrarSync('ℹ️ Nube vacía, usando local', 'error');
                     return false;
                 }
             } catch (err) {
                 console.error('❌ Error al cargar de la nube:', err);
-                mostrarSync('⚠️ Usando datos locales', 'error');
+                let errMsg = err.message || 'Error desconocido';
+                mostrarSync('⚠️ Error Nube: ' + errMsg, 'error');
                 return false;
             }
         }
@@ -717,10 +727,14 @@
 
         function saveData(key, value) {
             try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
+            
             if (key === 'farma_kai_productos' || key === 'farma_kai_categorias' || 
                 key === 'farma_kai_pedidos' || key === 'farma_kai_clientes') {
+                
                 clearTimeout(window._syncTimeout);
-                window._syncTimeout = setTimeout(sincronizarDatos, 3000);
+                window._syncTimeout = setTimeout(() => {
+                    sincronizarDatos();
+                }, 2000);
             }
         }
 
@@ -1563,20 +1577,6 @@
                     cameraStream = null;
                 }
             }
-
-            // ================================================================
-            // MANTENER CONEXIÓN ACTIVA CON SUPABASE
-            // ================================================================
-            function mantenerConexion() {
-                setInterval(() => {
-                    if (supabaseClient) {
-                        supabaseClient.from('datos').select('id').limit(1)
-                            .then(() => console.log('🔄 Ping a Supabase - conexión activa'))
-                            .catch(() => console.log('⚠️ Ping falló, intentando reconectar...'));
-                    }
-                }, 300000);
-            }
-            mantenerConexion();
         });
     </script>
 </body>
