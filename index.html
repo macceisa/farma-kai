@@ -545,14 +545,16 @@
             actualizarEnvioUI();
         }
 
-        function guardarCostoEnvio(valor) {
+        function guardarCostoEnvio(valor, mostrarMensaje = true) {
             try {
                 localStorage.setItem('farma_kai_costo_envio', valor.toString());
                 costoEnvio = parseFloat(valor) || 0;
                 actualizarEnvioUI();
-                showToast('✅ Costo de envío actualizado a $' + costoEnvio.toFixed(2));
+                if(mostrarMensaje) {
+                    showToast('✅ Costo de envío actualizado a $' + costoEnvio.toFixed(2));
+                }
                 renderOrderList();
-                sincronizarDatos(); // Forzar sincronización inmediata
+                sincronizarDatos();
             } catch(e) {}
         }
 
@@ -649,7 +651,8 @@
                     clientes = record.clientes || {};
                     if (record.costoEnvio !== undefined) {
                         costoEnvio = record.costoEnvio;
-                        guardarCostoEnvio(costoEnvio);
+                        try { localStorage.setItem('farma_kai_costo_envio', costoEnvio.toString()); } catch(e) {}
+                        actualizarEnvioUI();
                     }
 
                     let max = 0;
@@ -1475,7 +1478,7 @@
                     showToast('⚠️ Ingresa un monto válido');
                     return;
                 }
-                guardarCostoEnvio(valor);
+                guardarCostoEnvio(valor, true); // Aquí sí mostramos el mensaje
             });
 
             document.getElementById('prodImageFile').addEventListener('change', function(e) {
