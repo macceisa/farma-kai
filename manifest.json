@@ -1,0 +1,17 @@
+{
+  "name": "Farma Kai",
+  "short_name": "Farma Kai",
+  "description": "Catálogo digital y pedidos a domicilio",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1a8a4a",
+  "icons": [
+    {
+      "src": "https://i.postimg.cc/25bKx0Nh/28d1b7b0-9c56-45b1-b808-0751f23eeace-LOGO-KAI.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
