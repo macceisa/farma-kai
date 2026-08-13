@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    <title>Farma Kai</title>
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/25bKx0Nh/28d1b7b0-9c56-45b1-b808-0751f23eeace-LOGO-KAI.png" />
+    <link rel="apple-touch-icon" href="https://i.postimg.cc/25bKx0Nh/28d1b7b0-9c56-45b1-b808-0751f23eeace-LOGO-KAI.png" />
+    <link rel="manifest" href="manifest.json" />
+    <meta property="og:image" content="https://i.postimg.cc/25bKx0Nh/28d1b7b0-9c56-45b1-b808-0751f23eeace-LOGO-KAI.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+        html,body{height:100%;overflow-y:auto !important;overflow-x:hidden}
+        body{background:#f0f5f0;padding-bottom:100px;min-height:100vh}
+
+        .header{
+            position:fixed;top:0;left:0;right:0;z-index:1000;
+            height:130px;padding:6px 15px 4px;
+            display:flex;align-items:center;justify-content:center;gap:12px;
+            background-image: url('https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size:cover;background-position:center;
+            border-bottom:3px solid #1a8a4a;
+            box-shadow:0 4px 20px rgba(0,0,0,0.3);
+            overflow:hidden;
+        }
+        .header::before{
+            content:'';
+            position:absolute;top:0;left:0;right:0;bottom:0;
+            background:linear-gradient(135deg, 
+                rgba(255,255,255,0.92) 0%, 
+                rgba(255,255,255,0.75) 35%, 
+                rgba(255,255,255,0.85) 65%, 
+                rgba(255,255,255,0.92) 100%
+            );
+            pointer-events:none;z-index:0;
+        }
+        .header *{position:relative;z-index:1}
+
+        .header-logo-wrap{
+            display:inline-block;
+            background:transparent;
+            line-height:0;
+            cursor:pointer;
+            padding:0;
+            border:none;
+            position:relative;
+            flex-shrink:0;
+            mix-blend-mode: multiply;
+        }
+        .header-logo-wrap img{
+            height:110px;
+            width:auto;
+            display:block;
+            border:none;
+            outline:none;
+            background:transparent;
+            filter: brightness(1.05) contrast(1.1);
+        }
+        .header-title{text-align:center;color:#2d2a24;flex:1;min-width:0}
+        .header-title h1{font-size:26px;font-weight:700;color:#1a8a4a;margin:0;display:inline-block;text-shadow:0 0 20px rgba(255,255,255,0.5)}
+        .header-title p{font-size:13px;color:#555;margin-top:2px}
+        .header-title .whatsapp-number{background:#25D366;padding:2px 14px;border-radius:20px;font-weight:700;color:#fff;display:inline-flex;align-items:center;gap:4px;margin-left:6px;font-size:12px;box-shadow:0 2px 12px rgba(37,211,102,0.35)}
+        .header-phone-big{font-size:18px;font-weight:700;color:#25D366;margin-top:2px;display:flex;align-items:center;justify-content:center;gap:6px;text-shadow:0 0 10px rgba(255,255,255,0.5)}
+        .header-phone-big i{font-size:18px}
+        .header-actions{display:flex;align-items:center;flex-shrink:0}
+        .share-btn{background:#25D366;border:2px solid #1ebe5d;color:#fff;padding:6px 14px;border-radius:50px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;font-size:12px;box-shadow:0 2px 12px rgba(37,211,102,0.3)}
+        .share-btn:active{transform:scale(0.95)}
+        .share-btn span{display:inline}
+        .click-counter{position:absolute;bottom:-5px;right:-5px;background:#1a8a4a;color:#fff;border-radius:50%;width:24px;height:24px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.4);opacity:0;transition:opacity .3s;pointer-events:none;border:2px solid #fff;z-index:2}
+        .click-counter.show{opacity:1}
+        .admin-hint{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.7);color:#fff;padding:6px 14px;border-radius:20px;font-size:11px;opacity:0;transition:opacity .5s;z-index:999;pointer-events:none;white-space:nowrap}
+        .admin-hint.show{opacity:1}
+        .header-spacer{height:130px}
+
+        .categories-wrapper{position:sticky;top:130px;z-index:999;background:#1a2a3a;border-bottom:2px solid #0a121f;border-top:3px solid #1a8a4a;box-shadow:0 4px 12px rgba(0,0,0,0.3);padding:8px 0;min-height:48px;height:auto}
+        .categories{display:flex;overflow-x:auto;gap:8px;padding:0 14px;scrollbar-width:thin;scrollbar-color:#1a8a4a transparent;-webkit-overflow-scrolling:touch;align-items:center;min-height:32px}
+        .categories::-webkit-scrollbar{height:3px}
+        .categories::-webkit-scrollbar-thumb{background:#1a8a4a;border-radius:10px}
+        .categories::-webkit-scrollbar-track{background:transparent}
+        .cat-btn{flex:0 0 auto;padding:5px 14px;border:2px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(255,255,255,0.05);font-weight:600;cursor:pointer;white-space:nowrap;color:rgba(255,255,255,0.8);transition:all .25s ease;font-size:12px;display:inline-flex;align-items:center;height:30px;gap:4px}
+        .cat-btn:hover{background:rgba(255,255,255,0.15);color:#fff;border-color:rgba(255,255,255,0.4)}
+        .cat-btn:active{transform:scale(0.95)}
+        .cat-btn.active{background:#1a8a4a;color:#fff;border-color:#1a8a4a;box-shadow:0 4px 20px rgba(26,138,74,0.5)}
+        .cat-btn .cat-count{background:rgba(255,255,255,0.2);border-radius:20px;padding:0 8px;font-size:10px;font-weight:700;display:inline-flex;align-items:center;height:16px;margin-left:2px}
+        .cat-btn.active .cat-count{background:rgba(255,255,255,0.3)}
+        .categories-spacer{height:48px}
+        .search-bar{display:flex;align-items:center;gap:10px;padding:6px 14px;background:#fff;border-bottom:1px solid #d5dcd5;position:sticky;top:178px;z-index:998;box-shadow:0 2px 8px rgba(0,0,0,0.05);min-height:38px;border-top:1px solid #d5dcd5}
+        .search-bar input{flex:1;padding:5px 14px;border:1px solid #ddd;border-radius:30px;font-size:13px;background:#f8faf8;outline:none}
+        .search-bar input:focus{border-color:#1a8a4a}
+        .search-bar .search-icon{color:#888;font-size:14px}
+        .search-spacer{height:38px}
+        .products{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;padding:16px}
+        .product-card{background:#fff;border-radius:16px;padding:12px 10px 14px;text-align:center;border:1px solid #e0ece0;box-shadow:0 2px 8px rgba(0,0,0,0.06);position:relative}
+        .product-card .product-img{width:100%;height:120px;object-fit:contain;border-radius:10px;background:#f8faf8;margin-bottom:6px}
+        .product-card .product-img-placeholder{width:100%;height:120px;background:#eef3ee;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#bbb;margin-bottom:6px;border:1px dashed #c8d5c8}
+        .product-card .product-img-placeholder span{background:rgba(0,0,0,0.04);padding:4px 12px;border-radius:12px;font-size:12px;color:#999}
+        .product-card .name{font-weight:600;font-size:15px;min-height:40px}
+        .product-card .price{color:#1a8a4a;font-weight:700;font-size:18px;margin:6px 0 12px}
+        .product-card .add-btn{background:#1a8a4a;color:#fff;border:none;border-radius:30px;padding:10px 0;width:100%;font-weight:600;cursor:pointer}
+        .product-card .add-btn:active{background:#13703a}
+        .cart-fab{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a2a3a;color:#fff;padding:14px 30px;border-radius:50px;display:flex;align-items:center;gap:18px;box-shadow:0 6px 24px rgba(0,0,0,0.3);z-index:200;font-size:16px;cursor:pointer;border:none;min-width:200px;justify-content:center}
+        .cart-fab .badge{background:#1a8a4a;border-radius:30px;padding:2px 14px;font-weight:700}
+        .cart-fab .total{font-weight:700}
+        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:3000;justify-content:center;align-items:flex-start;padding-top:40px;overflow-y:auto}
+        .modal-overlay.open{display:flex}
+        .modal{background:#fff;width:100%;max-width:500px;max-height:90vh;border-radius:24px;padding:20px 18px 30px;overflow-y:auto;animation:slideUp .25s ease;margin:0 auto;position:relative}
+        @keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+        .modal-header{display:flex;justify-content:space-between;align-items:center;font-size:20px;font-weight:700;padding-bottom:12px;border-bottom:2px solid #eee}
+        .modal-header .close{background:none;border:none;font-size:28px;cursor:pointer;color:#888;padding:0 8px}
+        .modal-header .close:hover{color:#1a8a4a}
+        .cart-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #eee;gap:10px}
+        .cart-item .item-info{flex:1;min-width:0}
+        .cart-item .item-info .item-name{font-weight:600;font-size:14px}
+        .cart-item .item-info .item-price{font-size:13px;color:#888}
+        .cart-item .qty-control{display:flex;align-items:center;gap:8px;flex-shrink:0}
+        .cart-item .qty-control button{background:#eef3ee;border:none;border-radius:30px;width:30px;height:30px;font-size:16px;font-weight:700;cursor:pointer}
+        .cart-item .qty-control .qty-num{font-weight:700;min-width:24px;text-align:center;font-size:15px}
+        .cart-item .item-total{font-weight:600;color:#1a8a4a;min-width:60px;text-align:right;font-size:14px}
+        .cart-item .item-remove{background:none;border:none;color:#e74c3c;font-size:20px;cursor:pointer;padding:0 4px;font-weight:700;flex-shrink:0}
+        .cart-item .item-remove:hover{color:#c0392b}
+        .cart-item .item-remove:active{transform:scale(0.9)}
+        .cart-total{font-size:22px;font-weight:700;text-align:right;padding:16px 0 10px}
+        .checkout-btn{width:100%;background:#25D366;color:#fff;border:none;border-radius:50px;padding:16px;font-size:19px;font-weight:700;cursor:pointer;margin-top:8px}
+        .checkout-btn:active{transform:scale(0.98)}
+        .empty-cart{text-align:center;color:#888;padding:30px 0}
+        .checkout-modal .modal{max-height:95vh;border-radius:24px}
+        .checkout-modal .checkout-header{text-align:center;padding:8px 0 14px;border-bottom:2px solid #eee;position:relative}
+        .checkout-modal .checkout-header .close-checkout{position:absolute;right:0;top:0;font-size:28px;background:none;border:none;color:#888;cursor:pointer;padding:0 8px}
+        .checkout-modal .checkout-header .close-checkout:hover{color:#1a8a4a}
+        .checkout-modal .checkout-header img{max-height:160px;width:auto;margin-bottom:6px}
+        .checkout-modal .checkout-header h2{font-size:20px;color:#1a8a4a}
+        .checkout-modal .form-group{margin-bottom:14px}
+        .checkout-modal label{display:block;font-weight:600;font-size:14px;color:#555;margin-bottom:4px}
+        .checkout-modal input,.checkout-modal textarea,.checkout-modal select{width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:12px;font-size:15px;background:#f8faf8}
+        .checkout-modal input:focus,.checkout-modal textarea:focus,.checkout-modal select:focus{border-color:#1a8a4a;outline:none}
+        .checkout-modal .btn-confirm{width:100%;background:#25D366;color:#fff;border:none;border-radius:50px;padding:14px;font-size:18px;font-weight:700;cursor:pointer;margin-top:10px}
+        .checkout-modal .btn-confirm:active{transform:scale(0.98)}
+        .phone-group{display:flex;gap:10px}
+        .phone-group input{flex:1}
+        .phone-group .btn-buscar{padding:10px 16px;background:#1a8a4a;color:#fff;border:none;border-radius:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+        .phone-group .btn-buscar:active{transform:scale(0.95)}
+        .client-search-results{background:#fff;border:1px solid #ddd;border-radius:12px;max-height:200px;overflow-y:auto;margin-top:4px;display:none;box-shadow:0 4px 12px rgba(0,0,0,0.1)}
+        .client-search-results .result-item{padding:10px 14px;border-bottom:1px solid #eee;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+        .client-search-results .result-item:hover{background:#e8f5e9}
+        .client-search-results .result-item:last-child{border-bottom:none}
+        .client-search-results .result-item .result-name{font-weight:600;color:#333}
+        .client-search-results .result-item .result-phone{color:#888;font-size:13px}
+        .client-search-results .result-item .result-orders{background:#1a8a4a;color:#fff;border-radius:20px;padding:2px 12px;font-size:11px;font-weight:700}
+        .admin-modal .modal{max-width:650px;max-height:90vh;overflow-y:auto;border-radius:16px;margin-top:20px}
+        .admin-modal .admin-header{text-align:center;padding:4px 0 10px;border-bottom:2px solid #eee;margin-bottom:14px;position:relative}
+        .admin-modal .admin-header h2{color:#1a8a4a}
+        .admin-modal .admin-header .close-admin{position:absolute;right:0;top:0;font-size:28px;background:none;border:none;color:#888;cursor:pointer}
+        .admin-modal .admin-header .close-admin:hover{color:#1a8a4a}
+        .admin-modal label{font-weight:600;display:block;margin-top:10px;color:#555}
+        .admin-modal input,.admin-modal select{width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:12px;font-size:15px;margin-top:4px}
+        .admin-modal input:focus,.admin-modal select:focus{border-color:#1a8a4a;outline:none}
+        .admin-modal .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+        .admin-modal .file-input-wrap{margin-top:10px;display:flex;flex-direction:column;gap:8px}
+        .admin-modal .file-input-wrap input[type="file"]{padding:8px;border:1px dashed #ccc;border-radius:12px;background:#f8faf8;width:100%}
+        .admin-modal .file-input-wrap .preview-container{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+        .admin-modal .file-input-wrap .preview{max-width:100px;max-height:80px;border-radius:8px;display:none;object-fit:contain;background:#eef3ee;border:1px solid #ddd}
+        .admin-modal .file-input-wrap .preview.show{display:block}
+        .admin-modal .file-input-wrap .btn-remove-image{background:#e74c3c;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;display:none}
+        .admin-modal .file-input-wrap .btn-remove-image.show{display:inline-block}
+        .admin-modal .file-input-wrap .btn-remove-image:active{transform:scale(0.95)}
+        .admin-modal .btn-save{width:100%;margin-top:16px;padding:12px;background:#1a8a4a;color:#fff;border:none;border-radius:50px;font-weight:700;cursor:pointer}
+        .admin-modal .btn-save:active{transform:scale(0.98)}
+        .admin-modal .btn-danger{background:#e74c3c;margin-top:8px}
+        .admin-modal .btn-secondary{background:#1a8a4a;margin-top:8px}
+        .admin-modal .section-title{margin-top:24px;font-size:18px;font-weight:700;border-bottom:1px solid #eee;padding-bottom:8px}
+        .admin-modal .client-list,.admin-modal .order-list-admin,.admin-modal .product-list-admin,.admin-modal .category-list-admin{margin-top:10px;max-height:250px;overflow-y:auto}
+        .admin-modal .client-item,.admin-modal .order-list-admin .item,.admin-modal .product-list-admin .item,.admin-modal .category-list-admin .item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #eee;font-size:14px;flex-wrap:wrap}
+        .admin-modal .order-list-admin .item .order-info{flex:1;min-width:150px}
+        .admin-modal .order-list-admin .item .order-status{font-weight:700;padding:2px 12px;border-radius:20px;font-size:12px;margin:0 8px;white-space:nowrap;flex-shrink:0;display:inline-block}
+        .admin-modal .order-list-admin .item .order-status.pendiente{background:#f39c12;color:#fff}
+        .admin-modal .order-list-admin .item .order-status.surtido{background:#1a8a4a;color:#fff}
+        .admin-modal .order-list-admin .item .order-status.en-ruta{background:#8e44ad;color:#fff}
+        .admin-modal .order-list-admin .item .order-status.entregado{background:#2ecc71;color:#fff}
+        .admin-modal .order-list-admin .item .order-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+        .admin-modal .order-list-admin .item .order-actions button{padding:4px 10px;border:none;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+        .admin-modal .order-list-admin .item .order-actions .btn-status{background:#e0e0e0}
+        .admin-modal .order-list-admin .item .order-actions .btn-ticket{background:#8e44ad;color:#fff}
+        .admin-modal .order-list-admin .item .order-actions .btn-delete-order{background:#e74c3c;color:#fff}
+        .admin-modal .order-list-admin .item .order-actions .btn-delete-order:hover{background:#c0392b}
+        .admin-modal .btn-delete-item{background:#e74c3c;color:#fff;border:none;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;margin-left:8px}
+        .admin-modal .btn-delete-item:hover{background:#c0392b}
+        .admin-modal .btn-edit-item{background:#1a8a4a;color:#fff;border:none;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;margin-left:4px}
+        .admin-modal .btn-edit-item:hover{background:#13703a}
+        .admin-modal .cat-form-row{display:flex;gap:10px;margin-top:8px}
+        .admin-modal .cat-form-row input{flex:1}
+        .admin-modal .cat-form-row button{padding:10px 18px;background:#1a8a4a;color:#fff;border:none;border-radius:12px;font-weight:700;cursor:pointer}
+        .admin-modal .help-text{background:#e8f5e9;border-radius:12px;padding:12px 14px;margin-top:14px;font-size:14px;color:#1a5a3a;border-left:4px solid #1a8a4a}
+        .ticket-modal{z-index:4000 !important}
+        .ticket-modal .modal{max-width:420px;border-radius:16px}
+        .ticket-modal .ticket-content{background:#fff;border-radius:12px;padding:20px;text-align:center}
+        .ticket-modal .ticket-content img{max-height:200px;width:auto;margin-bottom:10px}
+        .ticket-modal .ticket-content .ticket-title{font-size:20px;font-weight:700;color:#1a8a4a}
+        .ticket-modal .ticket-content hr{border:none;border-top:2px dashed #ccc;margin:10px 0}
+        .ticket-modal .ticket-content .ticket-item{display:flex;justify-content:space-between;padding:4px 0;font-size:13px}
+        .ticket-modal .ticket-content .ticket-total{font-size:18px;font-weight:700;color:#1a8a4a;margin:8px 0}
+        .ticket-modal .ticket-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;justify-content:center}
+        .ticket-modal .ticket-actions button{padding:12px 18px;border:none;border-radius:50px;font-weight:700;cursor:pointer;flex:1;min-width:80px;display:flex;align-items:center;justify-content:center;gap:8px}
+        .ticket-modal .ticket-actions .btn-whatsapp{background:#25D366;color:#fff}
+        .ticket-modal .ticket-actions .btn-download{background:#1a8a4a;color:#fff}
+        .ticket-modal .ticket-actions .btn-close{background:#e6393c;color:#fff}
+        .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a2a3a;color:#fff;padding:12px 24px;border-radius:50px;font-size:15px;font-weight:600;box-shadow:0 4px 12px rgba(0,0,0,0.3);opacity:0;transition:all .3s ease;z-index:9999;pointer-events:none}
+        .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+        .sync-status{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1a8a4a;color:#fff;padding:8px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:150;display:none;pointer-events:none;box-shadow:0 4px 15px rgba(26,138,74,0.4)}
+        .sync-status.show{display:block}
+        .sync-status.success{background:#1a8a4a;box-shadow:0 4px 15px rgba(26,138,74,0.5)}
+        .sync-status.error{background:#e74c3c;box-shadow:0 4px 15px rgba(231,76,60,0.5)}
+
+        @media(max-width:400px){
+            .products{grid-template-columns:repeat(2,1fr);gap:10px;padding:12px}
+            .header-logo-wrap img{height:95px !important}
+            .header{height:120px;padding:4px 8px;gap:4px}
+            .header-spacer{height:120px}
+            .header-title h1{font-size:16px}
+            .header-title p{font-size:10px}
+            .header-title .whatsapp-number{font-size:9px;padding:1px 8px}
+            .header-phone-big{font-size:13px}
+            .share-btn{padding:4px 8px;font-size:10px}
+            .share-btn span{display:none}
+            .categories-wrapper{top:120px;padding:4px 0;min-height:38px}
+            .categories{padding:0 10px;min-height:28px;gap:5px}
+            .categories-spacer{height:38px}
+            .cat-btn{padding:3px 10px;font-size:10px;height:26px;border-radius:8px}
+            .cat-btn .cat-count{font-size:8px;padding:0 5px;height:14px}
+            .search-bar{top:158px;min-height:32px;padding:4px 10px}
+            .search-spacer{height:32px}
+            .search-bar input{padding:4px 10px;font-size:11px}
+            .phone-group{flex-direction:column}
+            .phone-group .btn-buscar{width:100%}
+            .admin-modal .modal{max-width:95%;margin:10px auto;padding:15px}
+            .admin-modal .row{grid-template-columns:1fr}
+            .modal{max-height:95vh;padding:15px;border-radius:16px}
+            .modal-overlay{padding-top:20px;align-items:flex-start}
+            .cart-item .qty-control button{width:26px;height:26px;font-size:14px}
+            .cart-item .item-remove{font-size:17px}
+            .checkout-modal .checkout-header .close-checkout{font-size:24px}
+        }
+        @media(min-width:401px) and (max-width:600px){
+            .header-logo-wrap img{height:100px !important}
+            .header{height:125px}
+            .header-spacer{height:125px}
+            .header-title h1{font-size:19px}
+            .categories-wrapper{top:125px}
+            .search-bar{top:173px}
+        }
+        @media(min-width:601px){
+            .products{grid-template-columns:repeat(3,1fr)}
+            .header-logo-wrap img{height:110px}
+            .header{height:130px}
+            .header-spacer{height:130px}
+            .categories-wrapper{top:130px}
+            .search-bar{top:178px}
+        }
+        @media(min-width:900px){
+            .products{grid-template-columns:repeat(4,1fr);max-width:1100px;margin:0 auto}
+            .categories{justify-content:center;gap:10px;padding:0 20px}
+            .admin-modal .modal{max-width:700px}
+            .checkout-modal .modal{max-width:500px}
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sync-status" id="syncStatus">🔄 Sincronizando...</div>
+
+    <header class="header" id="mainHeader">
+        <div class="header-logo-wrap" id="logoClick">
+            <img src="https://i.postimg.cc/25bKx0Nh/28d1b7b0-9c56-45b1-b808-0751f23eeace-LOGO-KAI.png" alt="Farma Kai" />
+            <span class="click-counter" id="clickCounter">0</span>
+        </div>
+        <div class="header-title" id="titleClick">
+            <h1>💊 Farma Kai</h1>
+            <p>
+                <span class="whatsapp-number">
+                    <i class="fab fa-whatsapp"></i> 2202908459
+                </span>
+            </p>
+            <div class="header-phone-big">
+                <i class="fas fa-phone"></i> 📞 2202908459
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="share-btn" id="shareBtn">
+                <i class="fab fa-whatsapp"></i> <span>Compartir</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="header-spacer"></div>
+    <div class="admin-hint" id="adminHint">🔐 5 clics en el logo para administrar</div>
+    <div id="toast" class="toast"></div>
+
+    <div class="categories-wrapper">
+        <div class="categories" id="categoriesContainer"></div>
+    </div>
+    <div class="categories-spacer"></div>
+
+    <div class="search-bar">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="searchInput" placeholder="🔎 Buscar productos..." />
+    </div>
+    <div class="search-spacer"></div>
+
+    <div class="products" id="productsContainer">
+        <div class="loading-msg">🔄 Cargando productos...</div>
+    </div>
+
+    <button class="cart-fab" id="cartFab">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="badge" id="cartCount">0</span>
+        <span class="total" id="cartTotal">$0</span>
+    </button>
+
+    <!-- ===== MODALES ===== -->
+    <div class="modal-overlay" id="cartModal">
+        <div class="modal">
+            <div class="modal-header">
+                <span>🛒 Tu pedido</span>
+                <button class="close" id="closeCart">&times;</button>
+            </div>
+            <div id="cartItemsContainer"><div class="empty-cart">Tu carrito está vacío</div></div>
+            <div class="cart-total" id="modalTotal">Total: $0</div>
+            <button class="checkout-btn" id="checkoutBtn"><i class="fas fa-pencil-alt"></i> Continuar con el pedido</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay checkout-modal" id="checkoutModal">
+        <div class="modal">
+            <div class="checkout-header">
+                <button class="close-checkout" id="closeCheckout">&times;</button>
+                <img src="https://i.postimg.cc/25bKx0Nh/28d1b7b0-9c56-45b1-b808-0751f23eeace-LOGO-KAI.png" alt="Farma Kai" />
+                <h2>💊 FARMA KAI</h2>
+                <p>📍 Completa tus datos para el envío</p>
+                <p style="font-size:14px;color:#25D366;font-weight:700;">📞 2202908459</p>
+            </div>
+            <div style="padding:0 0 10px;">
+                <div class="form-group">
+                    <label>👤 Nombre completo *</label>
+                    <input type="text" id="clientName" placeholder="Ej. Juan Pérez" />
+                </div>
+                <div class="form-group">
+                    <label>📱 Teléfono (con código) *</label>
+                    <div class="phone-group">
+                        <input type="tel" id="clientPhone" placeholder="2202908459" />
+                        <button class="btn-buscar" id="buscarClienteBtn">🔍 Buscar</button>
+                    </div>
+                    <div id="autofillHint" style="font-size:12px;color:#1a8a4a;margin-top:2px;display:none;">✅ Datos cargados</div>
+                    <div class="client-search-results" id="clientSearchResults"></div>
+                </div>
+                <div class="form-group">
+                    <label>🏠 Calle y número</label>
+                    <input type="text" id="clientStreet" placeholder="Calle Principal 123" />
+                </div>
+                <div class="row2" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div class="form-group">
+                        <label>Entre calles</label>
+                        <input type="text" id="clientBetween" placeholder="Av. 1 y Av. 2" />
+                    </div>
+                    <div class="form-group">
+                        <label>Colonia</label>
+                        <input type="text" id="clientColony" placeholder="Centro" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>📍 Referencia (opcional)</label>
+                    <input type="text" id="clientRef" placeholder="Frente a la iglesia" />
+                </div>
+                <div class="form-group">
+                    <label>📝 Observaciones</label>
+                    <textarea id="clientObs" placeholder="Toque el timbre" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>💳 Tipo de pago *</label>
+                    <select id="tipoPagoSelect">
+                        <option value="">Selecciona...</option>
+                        <option value="Efectivo">Efectivo</option>
+                        <option value="Tarjeta">Tarjeta</option>
+                        <option value="Transferencia">Transferencia</option>
+                        <option value="Vale/Despensa">Vale/Despensa</option>
+                        <option value="Depósito">Depósito</option>
+                    </select>
+                </div>
+                <div style="background:#e8f5e9;border-radius:12px;padding:10px 14px;margin:10px 0;border-left:4px solid #1a8a4a;font-size:14px;color:#1a5a3a;">
+                    🚚 <strong>Costo de envío: $<span id="envioDisplay">0.00</span></strong>
+                </div>
+                <button class="btn-confirm" id="confirmOrderBtn" onclick="enviarPedido()">
+                    <i class="fab fa-whatsapp"></i> Confirmar y enviar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay ticket-modal" id="ticketModal">
+        <div class="modal">
+            <div id="ticketContent" style="width:100%;background:#fff;border-radius:12px;padding:20px;text-align:center;">
+                <div id="ticketToRender" style="background:#fff;padding:20px;border-radius:12px;text-align:center;width:100%;max-width:400px;margin:0 auto;">
+                    <img id="ticketLogo" src="https://i.postimg.cc/25bKx0Nh/28d1b7b0-9c56-45b1-b808-0751f23eeace-LOGO-KAI.png" style="max-height:200px;width:auto;margin-bottom:10px;" />
+                    <div style="font-size:24px;font-weight:700;color:#1a8a4a;">FARMA KAI</div>
+                    <div style="font-size:14px;color:#888;">📍 Entregas a domicilio</div>
+                    <div style="font-size:16px;color:#25D366;font-weight:700;">📞 2202908459</div>
+                    <hr style="border:none;border-top:2px dashed #ccc;margin:10px 0;" />
+                    <div id="ticketBody"></div>
+                    <hr style="border:none;border-top:2px dashed #ccc;margin:10px 0;" />
+                    <div style="font-size:12px;color:#999;">✅ ¡Gracias por tu compra!</div>
+                </div>
+            </div>
+            <div class="ticket-actions">
+                <button class="btn-whatsapp" id="ticketWhatsappBtn"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+                <button class="btn-download" id="ticketDownloadBtn"><i class="fas fa-download"></i> Descargar</button>
+                <button class="btn-close" id="ticketCloseBtn"><i class="fas fa-times"></i> Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== ADMIN MODAL ===== -->
+    <div class="modal-overlay admin-modal" id="adminModal">
+        <div class="modal">
+            <div class="admin-header">
+                <h2>⚙️ Administración</h2>
+                <p>Gestiona productos, categorías, pedidos y clientes</p>
+                <button class="close-admin" id="closeAdmin">&times;</button>
+            </div>
+            <div style="margin-top:10px;">
+                <div style="background:#e8f5e9;border-radius:12px;padding:12px 14px;margin-bottom:14px;border-left:4px solid #1a8a4a;">
+                    <label style="font-weight:700;color:#1a5a3a;">🚚 Costo de envío (ingresa el monto manualmente):</label>
+                    <div style="display:flex;gap:10px;margin-top:6px;">
+                        <input type="number" id="envioInput" step="0.5" min="0" placeholder="Ej. 20" style="flex:1;padding:8px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;" />
+                        <button id="guardarEnvioBtn" style="padding:8px 20px;background:#1a8a4a;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;">Guardar</button>
+                    </div>
+                </div>
+
+                <h3 class="section-title">📋 Clientes</h3>
+                <div class="client-list" id="clientHistoryContainer"><small>Cargando...</small></div>
+
+                <h3 class="section-title">📦 Pedidos</h3>
+                <div class="order-list-admin" id="orderListAdmin"><small>Cargando...</small></div>
+
+                <h3 class="section-title">📂 Categorías</h3>
+                <div class="cat-form-row">
+                    <input type="text" id="newCategoryInput" placeholder="Nueva categoría" />
+                    <button id="addCategoryBtn">➕ Agregar</button>
+                </div>
+                <div class="category-list-admin" id="categoryListAdmin"><small>Cargando...</small></div>
+
+                <h3 class="section-title">➕ Agregar / Editar producto</h3>
+                <input type="hidden" id="prodId" />
+                <label>Nombre del producto</label>
+                <input type="text" id="prodName" placeholder="Ej. Paracetamol" />
+                <div class="row">
+                    <div>
+                        <label>Precio ($)</label>
+                        <input type="number" id="prodPrice" placeholder="22" step="0.5" />
+                    </div>
+                    <div>
+                        <label>Categoría</label>
+                        <select id="prodCategorySelect"></select>
+                    </div>
+                </div>
+
+                <div class="file-input-wrap">
+                    <label>📸 Imagen del producto (opcional)</label>
+                    <input type="file" id="prodImageFile" accept="image/*" />
+                    <div class="preview-container">
+                        <img id="imagePreview" class="preview" alt="Vista previa" />
+                        <button class="btn-remove-image" id="removeImageBtn">❌ Quitar imagen</button>
+                    </div>
+                </div>
+                <button type="button" id="openCameraBtn" style="width:100%; margin-top:8px; padding:10px; background:#1a8a4a; color:#fff; border:none; border-radius:12px; font-weight:700; cursor:pointer;">📷 Tomar Foto con Cámara</button>
+
+                <button class="btn-save" id="addProductBtn" onclick="procesarProducto()">✅ Agregar producto</button>
+                
+                <input type="text" id="adminProdSearch" placeholder="🔎 Buscar producto para editar o borrar..." style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:12px;font-size:15px;margin-top:10px;margin-bottom:5px;">
+                <div class="product-list-admin" id="adminProductList"><small>Productos guardados:</small></div>
+
+                <button class="btn-save btn-danger" id="resetProductsBtn" onclick="resetProducts()">🗑️ Restaurar productos por defecto</button>
+                <button class="btn-save btn-secondary" id="resetCategoriesBtn" onclick="resetCategories()">🔄 Restaurar categorías por defecto</button>
+                <button class="btn-save btn-danger" id="clearOrdersBtn" onclick="eliminarTodosPedidos()" style="background:#e67e22;">🗑️ Eliminar todos los pedidos</button>
+
+                <div class="help-text">
+                    <strong>📌 Acceso:</strong> 5 clics en el logo · Contraseña: <strong>admin123</strong><br />
+                    <strong>📸 Imágenes:</strong> Puedes subir fotos desde tu PC o celular al agregar un producto (opcional).<br />
+                    <strong>☁️ Supabase:</strong> Los datos se sincronizan automáticamente con la nube.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="cameraModal">
+        <div class="modal" style="max-width:450px; text-align:center;">
+            <div class="modal-header">
+                <span>📷 Tomar Foto del Producto</span>
+                <button class="close" id="closeCameraBtn">&times;</button>
+            </div>
+            <div style="width:100%; background:#000; border-radius:12px; overflow:hidden; margin-bottom:15px;">
+                <video id="cameraVideo" autoplay playsinline style="width:100%; height:auto; display:block;"></video>
+            </div>
+            <button id="captureBtn" style="width:100%; padding:12px; background:#1a8a4a; color:#fff; border:none; border-radius:50px; font-weight:700; cursor:pointer;">📸 Capturar Imagen</button>
+            <canvas id="cameraCanvas" style="display:none;"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // ================================================================
+        // CONFIGURACIÓN SUPABASE - FARMA KAI
+        // ================================================================
+        const SUPABASE_URL = 'https://rvvvlrbtmhfbkygzcebw.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2dnZscmJ0bWhmYmt5Z3pjZWJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1MTY1NDYsImV4cCI6MjEwMTA5MjU0Nn0.k6ESlnDOcDK3P469wQlstwYs4v3pBRVQ3nNBC32pzok';
+        
+        let supabaseClient = null;
+        try {
+            if (window.supabase) {
+                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                console.log('✅ Supabase conectado correctamente');
+            }
+        } catch(e) {
+            console.error('❌ Error al conectar Supabase:', e);
+        }
+
+        const CONFIG = {
+            whatsappNumber: '2202908459',
+            storeName: 'FARMA KAI',
+            adminPassword: 'admin123'
+        };
+
+        // ================================================================
+        // COSTO DE ENVÍO
+        // ================================================================
+        let costoEnvio = 0;
+
+        function cargarCostoEnvio() {
+            try {
+                const valor = localStorage.getItem('farma_kai_costo_envio');
+                if (valor !== null) {
+                    costoEnvio = parseFloat(valor) || 0;
+                } else {
+                    costoEnvio = 0;
+                }
+            } catch(e) {
+                costoEnvio = 0;
+            }
+            actualizarEnvioUI();
+        }
+
+        function guardarCostoEnvio(valor, mostrarMensaje = true) {
+            try {
+                localStorage.setItem('farma_kai_costo_envio', valor.toString());
+                costoEnvio = parseFloat(valor) || 0;
+                actualizarEnvioUI();
+                if(mostrarMensaje) {
+                    showToast('✅ Costo de envío actualizado a $' + costoEnvio.toFixed(2));
+                }
+                renderOrderList();
+                sincronizarDatos();
+            } catch(e) {}
+        }
+
+        function actualizarEnvioUI() {
+            const display = document.getElementById('envioDisplay');
+            if (display) display.textContent = costoEnvio.toFixed(2);
+            const input = document.getElementById('envioInput');
+            if (input) input.value = costoEnvio;
+        }
+
+        // ================================================================
+        // SINCRONIZACIÓN AUTOMÁTICA CON SUPABASE
+        // ================================================================
+        let syncInProgress = false;
+        let pendingSync = false;
+        let isLoadingCloud = false; // BLOQUEO PARA EVITAR BORRADO EN CARRERA
+
+        function mostrarSync(mensaje, tipo = '') {
+            const el = document.getElementById('syncStatus');
+            if(!el) return;
+            el.textContent = mensaje;
+            el.className = 'sync-status show';
+            if (tipo) el.classList.add(tipo);
+            clearTimeout(el._timeout);
+            el._timeout = setTimeout(() => {
+                el.classList.remove('show');
+                el.className = 'sync-status';
+            }, 6000);
+        }
+
+        async function sincronizarDatos() {
+            if (!supabaseClient) return;
+            if (syncInProgress) {
+                pendingSync = true;
+                return;
+            }
+            
+            syncInProgress = true;
+            mostrarSync('🔄 Sincronizando datos...');
+            
+            const dataToSync = {
+                products: products,
+                categories: categories,
+                pedidos: pedidos,
+                clientes: clientes,
+                costoEnvio: costoEnvio,
+                lastUpdated: new Date().toISOString()
+            };
+
+            try {
+                const { error } = await supabaseClient
+                    .from('datos')
+                    .upsert({ id: 1, contenido: dataToSync });
+
+                if (error) throw error;
+
+                mostrarSync('✅ Datos sincronizados en la nube', 'success');
+                syncInProgress = false;
+                if (pendingSync) {
+                    pendingSync = false;
+                    setTimeout(sincronizarDatos, 1000);
+                }
+            } catch (err) {
+                console.error('❌ Error al sincronizar:', err);
+                let errMsg = err.message || 'Error desconocido';
+                mostrarSync('⚠️ Error: ' + errMsg, 'error');
+                syncInProgress = false;
+                if (pendingSync) {
+                    pendingSync = false;
+                    setTimeout(sincronizarDatos, 5000);
+                }
+            }
+        }
+
+        async function cargarDatosDesdeNube() {
+            if (!supabaseClient) {
+                mostrarSync('ℹ️ Modo local', 'error');
+                return false;
+            }
+            isLoadingCloud = true; // ACTIVAMOS BLOQUEO
+            mostrarSync('🔄 Cargando datos de la nube...');
+            try {
+                const { data, error } = await supabaseClient
+                    .from('datos')
+                    .select('contenido')
+                    .eq('id', 1)
+                    .single();
+
+                if (error && error.code !== 'PGRST116') throw error;
+
+                if (data && data.contenido && data.contenido.products) {
+                    const record = data.contenido;
+                    products = record.products;
+                    categories = record.categories || categories;
+                    pedidos = record.pedidos || [];
+                    clientes = record.clientes || {};
+                    if (record.costoEnvio !== undefined) {
+                        costoEnvio = record.costoEnvio;
+                        try { localStorage.setItem('farma_kai_costo_envio', costoEnvio.toString()); } catch(e) {}
+                        actualizarEnvioUI();
+                    }
+
+                    let max = 0;
+                    products.forEach(p => { if (p.id > max) max = p.id; });
+                    nextId = max + 1;
+
+                    localStorage.setItem('farma_kai_productos', JSON.stringify(products));
+                    localStorage.setItem('farma_kai_categorias', JSON.stringify(categories));
+                    localStorage.setItem('farma_kai_pedidos', JSON.stringify(pedidos));
+                    localStorage.setItem('farma_kai_clientes', JSON.stringify(clientes));
+
+                    mostrarSync('✅ Datos cargados de la nube', 'success');
+                    renderCategories();
+                    renderProducts(currentCategory, searchTerm);
+                    updateCategorySelect();
+                    actualizarEnvioUI();
+                    if (document.getElementById('adminModal').classList.contains('open')) {
+                        renderAdminProductList();
+                        renderAdminCategoryList();
+                        renderOrderList();
+                        renderClientHistory();
+                    }
+                    isLoadingCloud = false; // DESACTIVAMOS BLOQUEO
+                    return true;
+                } else {
+                    mostrarSync('ℹ️ Nube vacía, usando local', 'error');
+                    isLoadingCloud = false; // DESACTIVAMOS BLOQUEO
+                    return false;
+                }
+            } catch (err) {
+                console.error('❌ Error al cargar de la nube:', err);
+                let errMsg = err.message || 'Error desconocido';
+                mostrarSync('⚠️ Error Nube: ' + errMsg, 'error');
+                isLoadingCloud = false; // DESACTIVAMOS BLOQUEO
+                return false;
+            }
+        }
+
+        // ================================================================
+        // CONFIGURACIÓN INICIAL
+        // ================================================================
+        const DEFAULT_CATEGORIES = [
+            { id: 'cat1', name: 'Medicamentos' }, { id: 'cat2', name: 'Vitaminas' }, { id: 'cat3', name: 'Cuidado Personal' },
+            { id: 'cat4', name: 'Bebidas' }, { id: 'cat5', name: 'Botanas' }, { id: 'cat6', name: 'Limpieza' }, { id: 'cat7', name: 'Abarrotes' },
+        ];
+
+        const DEFAULT_PRODUCTS = [];
+
+        // ================================================================
+        // ESTADO GLOBAL
+        // ================================================================
+        let categories = [];
+        let products = [];
+        let cart = [];
+        let currentCategory = 'todos';
+        let searchTerm = '';
+        let nextId = 1000;
+        let clientes = {};
+        let pedidos = [];
+        let selectedImageData = null;
+        let logoClicks = 0;
+        let logoClickTimer = null;
+        let currentTicketId = null; 
+        let editingProdId = null;
+        let ticketImagenData = null;
+
+        function loadData(key, def) {
+            try {
+                const stored = localStorage.getItem(key);
+                if (stored !== null) {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed)) return parsed;
+                    if (typeof parsed === 'object' && parsed !== null) return parsed;
+                }
+            } catch (e) {}
+            return def;
+        }
+
+        function saveData(key, value) {
+            try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
+            
+            // EVITAR SINCRONIZACIÓN MIENTRAS ESTÁ CARGANDO LA NUBE
+            if (isLoadingCloud) return;
+
+            if (key === 'farma_kai_productos' || key === 'farma_kai_categorias' || 
+                key === 'farma_kai_pedidos' || key === 'farma_kai_clientes') {
+                
+                clearTimeout(window._syncTimeout);
+                window._syncTimeout = setTimeout(() => {
+                    sincronizarDatos();
+                }, 2000);
+            }
+        }
+
+        function initData() {
+            categories = loadData('farma_kai_categorias', DEFAULT_CATEGORIES);
+            
+            if (localStorage.getItem('farma_kai_productos') !== null) {
+                products = loadData('farma_kai_productos', []);
+            } else {
+                products = []; // FIX: Ya no se llama a saveData aquí para evitar subir lista vacía
+            }
+            
+            products.forEach(p => { if (p.image === undefined) p.image = ''; });
+            let max = 0; products.forEach(p => { if (p.id > max) max = p.id; }); nextId = max + 1;
+            cart = loadData('farma_kai_carrito', []); if (!Array.isArray(cart)) cart = [];
+            clientes = loadData('farma_kai_clientes', {}); if (typeof clientes !== 'object') clientes = {};
+            pedidos = loadData('farma_kai_pedidos', []); if (!Array.isArray(pedidos)) pedidos = [];
+            cargarCostoEnvio();
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.classList.add('show'); clearTimeout(t._timeout);
+            t._timeout = setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        function normalizarTelefono(telefono) {
+            if (!telefono) return '';
+            let limpio = telefono.toString().replace(/[^0-9]/g, '');
+            if (limpio.length === 10 && !limpio.startsWith('52')) limpio = '52' + limpio;
+            return limpio;
+        }
+
+        // ================================================================
+        // FUNCIÓN PARA GENERAR IMAGEN DEL TICKET
+        // ================================================================
+        function generarImagenTicket(pedidoId) {
+            return new Promise((resolve) => {
+                const p = pedidos.find(p => p.id === pedidoId);
+                if (!p) { resolve(null); return; }
+                
+                const body = document.getElementById('ticketBody');
+                const estadoPedido = p.estado || 'Pendiente';
+                const estadoColor = estadoPedido === 'Pendiente' ? '#f39c12' : estadoPedido === 'Surtido' ? '#1a8a4a' : estadoPedido === 'En Ruta' ? '#8e44ad' : '#2ecc71';
+                
+                const subtotal = p.items.reduce((s, i) => s + (i.price * i.qty), 0);
+                const envio = p.envio || costoEnvio;
+                const total = subtotal + envio;
+                
+                body.innerHTML = `
+                    <div style="font-size:14px;color:#555;">📅 ${p.fecha}</div>
+                    <div style="font-size:14px;color:#555;">👤 ${p.cliente.nombre}</div>
+                    <div style="font-size:14px;color:#555;margin-bottom:4px;">📱 ${p.cliente.telefono}</div>
+                    <div style="font-size:14px;color:#555;margin-bottom:8px;">🏠 ${p.cliente.calle || 'Sin calle'}, ${p.cliente.colonia || 'Sin colonia'}</div>
+                    <div style="font-size:14px;color:#555;margin-bottom:8px;">💳 Pago: <strong>${p.tipoPago || 'No especificado'}</strong></div>
+                    <div style="font-size:14px;color:#555;margin-bottom:8px;">📦 Estado: <strong style="color:${estadoColor};">${estadoPedido}</strong></div>
+                    <hr style="border:none;border-top:2px dashed #ccc;margin:10px 0;">
+                    ${p.items.map(i => `<div class="ticket-item"><span>${i.qty}x ${i.name}</span><span>$${(i.price * i.qty).toFixed(2)}</span></div>`).join('')}
+                    <hr style="border:none;border-top:2px dashed #ccc;margin:10px 0;">
+                    <div class="ticket-item" style="font-size:14px;color:#555;"><span>💰 Subtotal</span><span>$${subtotal.toFixed(2)}</span></div>
+                    <div class="ticket-item" style="font-size:14px;color:#555;"><span>🚚 Envío</span><span>$${envio.toFixed(2)}</span></div>
+                    <hr style="border:none;border-top:2px dashed #ccc;margin:10px 0;">
+                    <div class="ticket-total">TOTAL: $${total.toFixed(2)}</div>
+                    <div style="font-size:11px;color:#999;margin-top:10px;">✅ ¡Gracias por tu compra!</div>
+                    <div style="font-size:10px;color:#aaa;">FARMA KAI - ${p.fecha}</div>
+                `;
+
+                setTimeout(() => {
+                    html2canvas(document.getElementById('ticketToRender'), {
+                        scale: 2,
+                        useCORS: true,
+                        backgroundColor: '#ffffff'
+                    }).then(canvas => {
+                        ticketImagenData = canvas.toDataURL('image/png');
+                        resolve(ticketImagenData);
+                    }).catch(() => {
+                        resolve(null);
+                    });
+                }, 300);
+            });
+        }
+
+        // ================================================================
+        // RENDERIZADO
+        // ================================================================
+        function renderCategories() {
+            const container = document.getElementById('categoriesContainer');
+            container.innerHTML = '';
+            const allBtn = document.createElement('button');
+            allBtn.className = 'cat-btn' + (currentCategory === 'todos' ? ' active' : '');
+            allBtn.dataset.cat = 'todos';
+            allBtn.innerHTML = `📦 Todos <span class="cat-count">${products.length}</span>`;
+            container.appendChild(allBtn);
+            const iconMap = { 'Medicamentos': '💊', 'Vitaminas': '🧪', 'Cuidado Personal': '🧴', 'Bebidas': '🥤', 'Botanas': '🍿', 'Limpieza': '🧹', 'Abarrotes': '🛒' };
+            categories.forEach(c => {
+                const count = products.filter(p => p.category === c.name).length;
+                const btn = document.createElement('button');
+                btn.className = 'cat-btn' + (currentCategory === c.name ? ' active' : '');
+                btn.dataset.cat = c.name;
+                btn.innerHTML = `${iconMap[c.name] || '📂'} ${c.name} <span class="cat-count">${count}</span>`;
+                container.appendChild(btn);
+            });
+            container.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active'); currentCategory = this.dataset.cat;
+                    renderProducts(currentCategory, searchTerm);
+                });
+            });
+        }
+
+        function renderProducts(category, search = '') {
+            const container = document.getElementById('productsContainer');
+            let filtered = category === 'todos' ? products : products.filter(p => p.category === category);
+            if (search.trim()) {
+                const term = search.toLowerCase().trim();
+                filtered = filtered.filter(p => p.name.toLowerCase().includes(term));
+            }
+            if (!filtered || filtered.length === 0) {
+                container.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:#888;">📭 No hay productos</div>`;
+                return;
+            }
+            container.innerHTML = filtered.map(p => {
+                const hasImage = p.image && p.image !== '' && p.image.startsWith('data:image');
+                const imageHtml = hasImage ? `<img src="${p.image}" alt="${p.name}" class="product-img" loading="lazy" />` : `<div class="product-img-placeholder"><span>📷 Sin imagen</span></div>`;
+                return `<div class="product-card" data-id="${p.id}">${imageHtml}<div class="name">${p.name}</div><div class="price">$${p.price}</div><button class="add-btn" onclick="addToCart(${p.id})">➕ Agregar</button></div>`;
+            }).join('');
+        }
+
+        function updateCartUI() {
+            const totalItems = cart.reduce((s, i) => s + i.qty, 0);
+            const totalPrice = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+            document.getElementById('cartCount').textContent = totalItems;
+            document.getElementById('cartTotal').textContent = `$${totalPrice}`;
+        }
+
+        function renderCartModal() {
+            const container = document.getElementById('cartItemsContainer');
+            const totalEl = document.getElementById('modalTotal');
+            if (cart.length === 0) {
+                container.innerHTML = `<div class="empty-cart">🛒 Tu carrito está vacío</div>`;
+                totalEl.textContent = 'Total: $0'; return;
+            }
+            container.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <div class="item-info"><div class="item-name">${item.name}</div><div class="item-price">$${item.price} c/u</div></div>
+                    <div class="qty-control">
+                        <button class="qty-minus" onclick="removeFromCart(${item.id})">−</button>
+                        <span class="qty-num">${item.qty}</span>
+                        <button class="qty-plus" onclick="addToCart(${item.id})">+</button>
+                        <span class="item-total">$${(item.price * item.qty).toFixed(2)}</span>
+                    </div>
+                    <button class="item-remove" onclick="eliminarItemCarrito(${item.id})">✕</button>
+                </div>`).join('');
+            const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+            totalEl.textContent = `Total: $${total.toFixed(2)}`;
+        }
+
+        function addToCart(id) {
+            const product = products.find(p => p.id === id);
+            if (!product) return;
+            const item = cart.find(i => i.id === id);
+            if (item) item.qty++;
+            else cart.push({ id: product.id, name: product.name, price: product.price, qty: 1 });
+            saveData('farma_kai_carrito', cart);
+            updateCartUI();
+            renderCartModal(); 
+            showToast(`✅ ${product.name} agregado`);
+        }
+
+        function removeFromCart(id) {
+            const item = cart.find(i => i.id === id);
+            if (item) {
+                item.qty--;
+                if (item.qty <= 0) cart = cart.filter(i => i.id !== id);
+                saveData('farma_kai_carrito', cart);
+                updateCartUI();
+                renderCartModal();
+            }
+        }
+
+        function eliminarItemCarrito(id) {
+            cart = cart.filter(item => item.id !== id);
+            saveData('farma_kai_carrito', cart);
+            updateCartUI();
+            renderCartModal();
+        }
+
+        // ================================================================
+        // ADMINISTRACIÓN
+        // ================================================================
+        function updateCategorySelect() {
+            const sel = document.getElementById('prodCategorySelect');
+            sel.innerHTML = categories.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+        }
+
+        function procesarProducto() {
+            if (editingProdId) {
+                guardarCambiosProducto(editingProdId);
+            } else {
+                agregarProducto();
+            }
+        }
+
+        function agregarProducto() {
+            const name = document.getElementById('prodName').value.trim();
+            const price = parseFloat(document.getElementById('prodPrice').value);
+            const category = document.getElementById('prodCategorySelect').value;
+            const image = selectedImageData || '';
+            if (!name || isNaN(price)) { showToast('⚠️ Completa nombre y precio'); return; }
+            products.push({ id: nextId++, name, price, category, image });
+            saveData('farma_kai_productos', products);
+            renderProducts(currentCategory, searchTerm);
+            renderCategories();
+            renderAdminProductList();
+            document.getElementById('prodName').value = ''; document.getElementById('prodPrice').value = '';
+            document.getElementById('prodImageFile').value = ''; selectedImageData = null;
+            document.getElementById('imagePreview').classList.remove('show');
+            document.getElementById('removeImageBtn').classList.remove('show');
+            showToast('✅ Producto agregado');
+        }
+
+        function editarProducto(id) {
+            const p = products.find(p => p.id == id);
+            if(!p) return;
+            editingProdId = id;
+            document.getElementById('prodName').value = p.name;
+            document.getElementById('prodPrice').value = p.price;
+            document.getElementById('prodCategorySelect').value = p.category;
+            selectedImageData = p.image || null;
+            if(selectedImageData) {
+                document.getElementById('imagePreview').src = selectedImageData;
+                document.getElementById('imagePreview').classList.add('show');
+                document.getElementById('removeImageBtn').classList.add('show');
+            } else {
+                document.getElementById('imagePreview').classList.remove('show');
+                document.getElementById('removeImageBtn').classList.remove('show');
+            }
+            const btn = document.getElementById('addProductBtn');
+            btn.innerHTML = '💾 Guardar Cambios';
+            document.getElementById('prodName').focus();
+        }
+
+        function guardarCambiosProducto(id) {
+            const p = products.find(p => p.id == id);
+            if(!p) return;
+            p.name = document.getElementById('prodName').value.trim();
+            p.price = parseFloat(document.getElementById('prodPrice').value);
+            p.category = document.getElementById('prodCategorySelect').value;
+            p.image = selectedImageData || '';
+            if (!p.name || isNaN(p.price)) { showToast('⚠️ Completa nombre y precio'); return; }
+            saveData('farma_kai_productos', products);
+            renderProducts(currentCategory, searchTerm);
+            renderCategories();
+            renderAdminProductList();
+            editingProdId = null;
+            document.getElementById('prodName').value = ''; document.getElementById('prodPrice').value = '';
+            document.getElementById('prodImageFile').value = ''; selectedImageData = null;
+            document.getElementById('imagePreview').classList.remove('show');
+            document.getElementById('removeImageBtn').classList.remove('show');
+            const btn = document.getElementById('addProductBtn');
+            btn.innerHTML = '✅ Agregar producto';
+            showToast('✅ Producto actualizado');
+        }
+
+        function eliminarProducto(id) {
+            if (editingProdId == id) {
+                editingProdId = null;
+                document.getElementById('prodName').value = ''; document.getElementById('prodPrice').value = '';
+                document.getElementById('prodImageFile').value = ''; selectedImageData = null;
+                document.getElementById('imagePreview').classList.remove('show');
+                document.getElementById('removeImageBtn').classList.remove('show');
+                const btn = document.getElementById('addProductBtn');
+                btn.innerHTML = '✅ Agregar producto';
+            }
+            products = products.filter(p => p.id !== id);
+            saveData('farma_kai_productos', products);
+            renderProducts(currentCategory, searchTerm);
+            renderCategories();
+            renderAdminProductList();
+            showToast('🗑️ Producto eliminado');
+        }
+
+        function agregarCategoria() {
+            const input = document.getElementById('newCategoryInput');
+            const name = input.value.trim();
+            if (name && !categories.find(c => c.name === name)) {
+                categories.push({ id: 'cat' + Date.now(), name });
+                saveData('farma_kai_categorias', categories);
+                renderCategories();
+                updateCategorySelect();
+                renderAdminCategoryList();
+                input.value = '';
+                showToast('✅ Categoría agregada');
+            }
+        }
+
+        function eliminarCategoria(name) {
+            categories = categories.filter(c => c.name !== name);
+            saveData('farma_kai_categorias', categories);
+            renderCategories();
+            updateCategorySelect();
+            renderAdminCategoryList();
+            showToast('🗑️ Categoría eliminada');
+        }
+
+        function resetProducts() {
+            if (confirm('¿Restaurar productos por defecto? Se perderán los actuales.')) {
+                products = JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
+                saveData('farma_kai_productos', products);
+                renderProducts(currentCategory, searchTerm);
+                renderCategories();
+                renderAdminProductList();
+                showToast('✅ Productos restaurados');
+            }
+        }
+
+        function resetCategories() {
+            if (confirm('¿Restaurar categorías por defecto?')) {
+                categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
+                saveData('farma_kai_categorias', categories);
+                renderCategories();
+                updateCategorySelect();
+                renderAdminCategoryList();
+                showToast('✅ Categorías restauradas');
+            }
+        }
+
+        function eliminarTodosPedidos() {
+            if (confirm('¿Eliminar TODOS los pedidos?')) {
+                pedidos = [];
+                saveData('farma_kai_pedidos', pedidos);
+                renderOrderList();
+                showToast('🗑️ Pedidos eliminados');
+            }
+        }
+
+        function renderAdminProductList() {
+            const c = document.getElementById('adminProductList');
+            const term = (document.getElementById('adminProdSearch')?.value || '').toLowerCase().trim();
+            const filtered = products.filter(p => p.name.toLowerCase().includes(term));
+            if (filtered.length === 0) {
+                c.innerHTML = '<small>No se encontraron productos.</small>';
+                return;
+            }
+            c.innerHTML = filtered.map(p => `<div class="item">
+                <span>${p.name} ($${p.price})</span>
+                <div style="display:flex;gap:4px;">
+                    <button class="btn-edit-item" onclick="editarProducto(${p.id})">✏️</button>
+                    <button class="btn-delete-item" onclick="eliminarProducto(${p.id})">✕</button>
+                </div>
+            </div>`).join('');
+        }
+
+        function renderAdminCategoryList() {
+            const c = document.getElementById('categoryListAdmin');
+            c.innerHTML = categories.map(c => `<div class="item"><span>${c.name}</span><button class="btn-delete-item" onclick="eliminarCategoria('${c.name}')">✕</button></div>`).join('');
+        }
+
+        function renderOrderList() {
+            const c = document.getElementById('orderListAdmin');
+            if (pedidos.length === 0) { c.innerHTML = '<small>Sin pedidos</small>'; return; }
+            c.innerHTML = pedidos.slice().reverse().map(p => {
+                const estadoPedido = p.estado || 'Pendiente';
+                const estadoClass = estadoPedido.toLowerCase().replace(' ', '-');
+                const subtotal = p.items.reduce((s, i) => s + (i.price * i.qty), 0);
+                const envio = p.envio || costoEnvio;
+                const total = subtotal + envio;
+                return `
+                <div class="item">
+                    <div class="order-info">
+                        <strong>${p.cliente.nombre}</strong> - 📱 ${p.cliente.telefono}<br>
+                        <small>${p.fecha}</small><br>
+                        <small>💰 Subtotal: $${subtotal.toFixed(2)} | 🚚 Envío: $${envio.toFixed(2)} | 💳 ${p.tipoPago || 'No especificado'}</small><br>
+                        <strong style="color:#1a8a4a;">Total: $${total.toFixed(2)}</strong>
+                    </div>
+                    <div class="order-status ${estadoClass}">${estadoPedido}</div>
+                    <div class="order-actions">
+                        ${estadoPedido === 'Pendiente' ? `<button class="btn-status" onclick="cambiarEstadoPedido('${p.id}', 'Surtido')">✅ Surtir</button>` : ''}
+                        ${estadoPedido === 'Surtido' ? `<button class="btn-status" onclick="cambiarEstadoPedido('${p.id}', 'En Ruta')">🛵 En Ruta</button>` : ''}
+                        ${estadoPedido === 'En Ruta' ? `<button class="btn-status" onclick="cambiarEstadoPedido('${p.id}', 'Entregado')">📦 Entregado</button>` : ''}
+                        ${estadoPedido === 'Entregado' ? `<button class="btn-status" onclick="cambiarEstadoPedido('${p.id}', 'Pendiente')">🔄 Reabrir</button>` : ''}
+                        <button class="btn-ticket" onclick="verTicket('${p.id}')">🎫 Ticket</button>
+                        <button class="btn-delete-order" onclick="eliminarPedido('${p.id}')">✕</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function cambiarEstadoPedido(id, estado) {
+            const p = pedidos.find(p => p.id === id);
+            if (p) { p.estado = estado; saveData('farma_kai_pedidos', pedidos); renderOrderList(); showToast('✅ Estado actualizado'); }
+        }
+
+        function eliminarPedido(id) {
+            pedidos = pedidos.filter(p => p.id !== id);
+            saveData('farma_kai_pedidos', pedidos);
+            renderOrderList();
+            showToast('🗑️ Pedido eliminado');
+        }
+
+        function renderClientHistory() {
+            const c = document.getElementById('clientHistoryContainer');
+            const arr = Object.entries(clientes); 
+            if (arr.length === 0) { c.innerHTML = '<small>Sin clientes registrados</small>'; return; }
+            c.innerHTML = arr.sort((a,b) => (b[1].pedidos||0) - (a[1].pedidos||0)).map(([key, cl]) => `
+                <div class="item">
+                    <div>
+                        <strong>${cl.nombre || 'Sin nombre'}</strong><br>
+                        <small>📱 ${cl.telefono || 'Sin teléfono'}</small>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <span class="result-orders">${cl.pedidos || 0} pedidos</span>
+                        <button class="btn-delete-item" onclick="eliminarCliente('${key}')">✕</button>
+                    </div>
+                </div>`).join('');
+        }
+
+        function eliminarCliente(key) {
+            if (clientes[key]) {
+                delete clientes[key];
+                saveData('farma_kai_clientes', clientes);
+                renderClientHistory();
+                showToast('🗑️ Cliente eliminado');
+            } else {
+                showToast('⚠️ No se pudo encontrar el cliente', 'error');
+            }
+        }
+
+        function buscarCliente() {
+            const phone = document.getElementById('clientPhone').value.trim();
+            if (!phone) return;
+            const results = Object.values(clientes).filter(c => c.telefono.includes(phone));
+            const box = document.getElementById('clientSearchResults');
+            if (results.length > 0) {
+                box.innerHTML = results.map(c => `<div class="result-item" onclick="autocompletarCliente('${c.telefono}')"><span class="result-name">${c.nombre}</span><span class="result-phone">${c.telefono}</span></div>`).join('');
+                box.style.display = 'block';
+            } else {
+                box.innerHTML = '<div class="result-item"><span>No encontrado</span></div>';
+                box.style.display = 'block';
+            }
+        }
+
+        function autocompletarCliente(phone) {
+            const c = Object.values(clientes).find(c => c.telefono === phone);
+            if (c) {
+                document.getElementById('clientName').value = c.nombre;
+                document.getElementById('clientStreet').value = c.calle || '';
+                document.getElementById('clientBetween').value = c.entrecalles || '';
+                document.getElementById('clientColony').value = c.colonia || '';
+                document.getElementById('clientRef').value = c.referencia || '';
+                document.getElementById('autofillHint').style.display = 'block';
+                document.getElementById('clientSearchResults').style.display = 'none';
+            }
+        }
+
+        // ================================================================
+        // TICKET - verTicket()
+        // ================================================================
+        function verTicket(pedidoId) {
+            const p = pedidos.find(p => p.id === pedidoId);
+            if (!p) return;
+            currentTicketId = pedidoId;
+            
+            const body = document.getElementById('ticketBody');
+            const estadoPedido = p.estado || 'Pendiente';
+            const estadoColor = estadoPedido === 'Pendiente' ? '#f39c12' : estadoPedido === 'Surtido' ? '#1a8a4a' : estadoPedido === 'En Ruta' ? '#8e44ad' : '#2ecc71';
+            
+            const subtotal = p.items.reduce((s, i) => s + (i.price * i.qty), 0);
+            const envio = p.envio || costoEnvio;
+            const total = subtotal + envio;
+            
+            body.innerHTML = `
+                <div style="font-size:14px;color:#555;">📅 ${p.fecha}</div>
+                <div style="font-size:14px;color:#555;">👤 ${p.cliente.nombre}</div>
+                <div style="font-size:14px;color:#555;margin-bottom:4px;">📱 ${p.cliente.telefono}</div>
+                <div style="font-size:14px;color:#555;margin-bottom:8px;">🏠 ${p.cliente.calle || 'Sin calle'}, ${p.cliente.colonia || 'Sin colonia'}</div>
+                <div style="font-size:14px;color:#555;margin-bottom:8px;">💳 Pago: <strong>${p.tipoPago || 'No especificado'}</strong></div>
+                <div style="font-size:14px;color:#555;margin-bottom:8px;">📦 Estado: <strong style="color:${estadoColor};">${estadoPedido}</strong></div>
+                <hr style="border:none;border-top:2px dashed #ccc;margin:10px 0;">
+                ${p.items.map(i => `<div class="ticket-item"><span>${i.qty}x ${i.name}</span><span>$${(i.price * i.qty).toFixed(2)}</span></div>`).join('')}
+                <hr style="border:none;border-top:2px dashed #ccc;margin:10px 0;">
+                <div class="ticket-item" style="font-size:14px;color:#555;"><span>💰 Subtotal</span><span>$${subtotal.toFixed(2)}</span></div>
+                <div class="ticket-item" style="font-size:14px;color:#555;"><span>🚚 Envío</span><span>$${envio.toFixed(2)}</span></div>
+                <hr style="border:none;border-top:2px dashed #ccc;margin:10px 0;">
+                <div class="ticket-total">TOTAL: $${total.toFixed(2)}</div>
+                <div style="font-size:11px;color:#999;margin-top:10px;">✅ ¡Gracias por tu compra!</div>
+                <div style="font-size:10px;color:#aaa;">FARMA KAI - ${p.fecha}</div>
+            `;
+            
+            setTimeout(() => {
+                html2canvas(document.getElementById('ticketToRender'), {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: '#ffffff'
+                }).then(canvas => {
+                    ticketImagenData = canvas.toDataURL('image/png');
+                    document.getElementById('ticketContent').dataset.imageData = ticketImagenData;
+                }).catch(() => {
+                    console.error('Error generando imagen del ticket');
+                });
+            }, 400);
+            
+            document.getElementById('ticketModal').classList.add('open');
+        }
+
+        // ================================================================
+        // PEDIDOS Y WHATSAPP
+        // ================================================================
+        function enviarPedido() {
+            const nombre = document.getElementById('clientName').value.trim();
+            const telefono = document.getElementById('clientPhone').value.trim();
+            const tipoPago = document.getElementById('tipoPagoSelect').value;
+            
+            if (!nombre || !telefono) { showToast('⚠️ Faltan datos'); return; }
+            if (!tipoPago) { showToast('⚠️ Selecciona un tipo de pago'); return; }
+            if (cart.length === 0) { showToast('⚠️ Carrito vacío'); return; }
+
+            const subtotal = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+            const totalConEnvio = subtotal + costoEnvio;
+
+            const pedido = {
+                id: 'ped_' + Date.now(),
+                fecha: new Date().toLocaleString('es-MX'),
+                cliente: {
+                    nombre, telefono,
+                    calle: document.getElementById('clientStreet').value,
+                    entrecalles: document.getElementById('clientBetween').value,
+                    colonia: document.getElementById('clientColony').value,
+                    referencia: document.getElementById('clientRef').value,
+                    observaciones: document.getElementById('clientObs').value
+                },
+                items: cart.map(i => ({ name: i.name, qty: i.qty, price: i.price })),
+                subtotal: subtotal,
+                envio: costoEnvio,
+                total: totalConEnvio,
+                estado: 'Pendiente',
+                tipoPago: tipoPago
+            };
+
+            pedidos.push(pedido);
+            saveData('farma_kai_pedidos', pedidos);
+
+            const telKey = normalizarTelefono(telefono);
+            if (!clientes[telKey]) clientes[telKey] = { nombre, telefono, pedidos: 0, calle: '', colonia: '' };
+            clientes[telKey].pedidos = (clientes[telKey].pedidos || 0) + 1;
+            clientes[telKey].calle = pedido.cliente.calle;
+            clientes[telKey].colonia = pedido.cliente.colonia;
+            saveData('farma_kai_clientes', clientes);
+
+            if (document.getElementById('adminModal').classList.contains('open')) {
+                renderOrderList();
+                renderClientHistory();
+            }
+
+            let msg = `💊 *NUEVO PEDIDO - FARMA KAI*\n\n`;
+            msg += `━━━━━━━━━━━━━━━\n`;
+            msg += `👤 *Cliente:* ${nombre}\n`;
+            msg += `📱 *Teléfono:* ${telefono}\n`;
+            msg += `🏠 *Dirección:* ${pedido.cliente.calle || 'No especificada'}\n`;
+            msg += `📍 *Colonia:* ${pedido.cliente.colonia || 'No especificada'}\n`;
+            if (pedido.cliente.entrecalles) msg += `↔️ *Entre calles:* ${pedido.cliente.entrecalles}\n`;
+            if (pedido.cliente.referencia) msg += `📌 *Referencia:* ${pedido.cliente.referencia}\n`;
+            if (pedido.cliente.observaciones) msg += `📝 *Notas:* ${pedido.cliente.observaciones}\n`;
+            msg += `💳 *Pago:* ${tipoPago}\n`;
+            msg += `━━━━━━━━━━━━━━━\n`;
+            msg += `🛍️ *LISTA DE PRODUCTOS:*\n`;
+            cart.forEach(i => msg += `▪️ ${i.qty}x ${i.name} - $${(i.price * i.qty).toFixed(2)}\n`);
+            msg += `━━━━━━━━━━━━━━━\n`;
+            msg += `💰 *Subtotal: $${subtotal.toFixed(2)}*\n`;
+            msg += `🚚 *Envío: $${costoEnvio.toFixed(2)}*\n`;
+            msg += `💵 *TOTAL: $${totalConEnvio.toFixed(2)}*\n\n`;
+            msg += `✅ ¡Gracias por tu preferencia! Pronto nos comunicaremos contigo.`;
+            
+            window.open(`https://wa.me/52${CONFIG.whatsappNumber}?text=${encodeURIComponent(msg)}`, '_blank');
+            
+            verTicket(pedido.id);
+            cart = []; saveData('farma_kai_carrito', cart); updateCartUI();
+            document.getElementById('checkoutModal').classList.remove('open');
+        }
+
+        // ================================================================
+        // EVENTOS DEL TICKET
+        // ================================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            initData();
+            renderCategories();
+            renderProducts(currentCategory, searchTerm);
+            updateCartUI();
+            updateCategorySelect();
+            cargarDatosDesdeNube();
+
+            if (supabaseClient) {
+                supabaseClient
+                    .channel('public:datos')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'datos' }, payload => {
+                        mostrarSync('🔄 Actualizando datos en tiempo real...');
+                        cargarDatosDesdeNube();
+                    })
+                    .subscribe();
+            }
+
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+                searchTerm = e.target.value;
+                renderProducts(currentCategory, searchTerm);
+            });
+
+            document.getElementById('cartFab').addEventListener('click', () => { renderCartModal(); document.getElementById('cartModal').classList.add('open'); });
+            document.getElementById('closeCart').addEventListener('click', () => document.getElementById('cartModal').classList.remove('open'));
+            document.getElementById('checkoutBtn').addEventListener('click', () => {
+                if (cart.length === 0) { showToast('🛒 Carrito vacío'); return; }
+                document.getElementById('cartModal').classList.remove('open');
+                document.getElementById('checkoutModal').classList.add('open');
+                actualizarEnvioUI();
+            });
+            document.getElementById('closeCheckout').addEventListener('click', () => document.getElementById('checkoutModal').classList.remove('open'));
+            document.getElementById('buscarClienteBtn').addEventListener('click', buscarCliente);
+            document.getElementById('clientPhone').addEventListener('input', function() {
+                document.getElementById('autofillHint').style.display = 'none';
+                document.getElementById('clientSearchResults').style.display = 'none';
+            });
+
+            document.getElementById('ticketCloseBtn').addEventListener('click', () => document.getElementById('ticketModal').classList.remove('open'));
+            
+            document.getElementById('ticketWhatsappBtn').addEventListener('click', async function() {
+                if (!currentTicketId) {
+                    showToast('⚠️ No hay ticket seleccionado');
+                    return;
+                }
+                
+                const p = pedidos.find(p => p.id === currentTicketId);
+                if (!p) {
+                    showToast('⚠️ Pedido no encontrado');
+                    return;
+                }
+
+                showToast('📸 Generando imagen del ticket...');
+                const imgData = await generarImagenTicket(currentTicketId);
+                
+                if (!imgData) {
+                    showToast('⚠️ No se pudo generar la imagen');
+                    return;
+                }
+
+                try {
+                    const response = await fetch(imgData);
+                    const blob = await response.blob();
+                    const file = new File([blob], `ticket_${p.id}.png`, { type: 'image/png' });
+
+                    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                        const msg = `💊 *TICKET DE COMPRA - FARMA KAI*\n📅 ${p.fecha}\n👤 ${p.cliente.nombre}\n💵 Total: $${p.total.toFixed(2)}\n✅ ¡Gracias por tu compra!`;
+                        await navigator.share({
+                            text: msg,
+                            files: [file]
+                        });
+                        showToast('✅ Ticket enviado');
+                        return;
+                    }
+                } catch (err) {
+                    if (err.name === 'AbortError') {
+                        showToast('⚠️ Envío cancelado');
+                        return;
+                    }
+                    console.error('Error compartiendo:', err);
+                }
+
+                const link = document.createElement('a');
+                link.download = `ticket_${p.id}.png`;
+                link.href = imgData;
+                link.click();
+                showToast('📸 Imagen descargada');
+
+                setTimeout(() => {
+                    const subtotal = p.items.reduce((s, i) => s + (i.price * i.qty), 0);
+                    const envio = p.envio || costoEnvio;
+                    const total = subtotal + envio;
+                    
+                    let msg = `💊 *TICKET DE COMPRA - FARMA KAI*\n\n`;
+                    msg += `📅 ${p.fecha}\n`;
+                    msg += `👤 ${p.cliente.nombre}\n`;
+                    msg += `🏠 ${p.cliente.calle || 'Sin calle'}, ${p.cliente.colonia || 'Sin colonia'}\n`;
+                    msg += `💳 Pago: ${p.tipoPago || 'No especificado'}\n`;
+                    msg += `━━━━━━━━━━━━━━━\n`;
+                    p.items.forEach(i => msg += `▪️ ${i.qty}x ${i.name} - $${(i.price * i.qty).toFixed(2)}\n`);
+                    msg += `━━━━━━━━━━━━━━━\n`;
+                    msg += `💰 Subtotal: $${subtotal.toFixed(2)}\n`;
+                    msg += `🚚 Envío: $${envio.toFixed(2)}\n`;
+                    msg += `💵 *TOTAL: $${total.toFixed(2)}*\n\n`;
+                    msg += `✅ ¡Gracias por tu compra! 🛍️`;
+
+                    const num = normalizarTelefono(p.cliente.telefono);
+                    window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`, '_blank');
+                    showToast('✅ Texto enviado a WhatsApp');
+                }, 1000);
+            });
+
+            document.getElementById('ticketDownloadBtn').addEventListener('click', async function() {
+                if (!currentTicketId) {
+                    showToast('⚠️ No hay ticket seleccionado');
+                    return;
+                }
+                
+                showToast('📸 Generando imagen...');
+                const imgData = await generarImagenTicket(currentTicketId);
+                
+                if (imgData) {
+                    const link = document.createElement('a');
+                    link.download = `ticket_${currentTicketId}.png`;
+                    link.href = imgData;
+                    link.click();
+                    showToast('✅ Imagen descargada');
+                } else {
+                    showToast('⚠️ Error al generar la imagen');
+                }
+            });
+
+            document.getElementById('logoClick').addEventListener('click', function() {
+                logoClicks++;
+                const counter = document.getElementById('clickCounter');
+                counter.textContent = logoClicks; counter.classList.add('show');
+                document.getElementById('adminHint').classList.remove('show');
+                clearTimeout(logoClickTimer);
+                logoClickTimer = setTimeout(() => { logoClicks = 0; counter.classList.remove('show'); }, 3000);
+                if (logoClicks >= 5) {
+                    logoClicks = 0; counter.classList.remove('show');
+                    const pass = prompt('🔐 Ingresa la contraseña de administrador:');
+                    if (pass === CONFIG.adminPassword) {
+                        renderAdminProductList(); renderAdminCategoryList(); renderOrderList(); renderClientHistory();
+                        document.getElementById('adminModal').classList.add('open');
+                    } else { showToast('❌ Contraseña incorrecta'); }
+                }
+            });
+            document.getElementById('titleClick').addEventListener('click', function() {
+                const hint = document.getElementById('adminHint');
+                hint.classList.add('show');
+                setTimeout(() => hint.classList.remove('show'), 3000);
+            });
+            document.getElementById('closeAdmin').addEventListener('click', () => document.getElementById('adminModal').classList.remove('open'));
+            document.getElementById('addCategoryBtn').addEventListener('click', agregarCategoria);
+            
+            document.getElementById('adminProdSearch').addEventListener('input', renderAdminProductList);
+
+            document.getElementById('guardarEnvioBtn').addEventListener('click', function() {
+                const input = document.getElementById('envioInput');
+                const valor = parseFloat(input.value);
+                if (isNaN(valor) || valor < 0) {
+                    showToast('⚠️ Ingresa un monto válido');
+                    return;
+                }
+                guardarCostoEnvio(valor, true);
+            });
+
+            document.getElementById('prodImageFile').addEventListener('change', function(e) {
+                const file = e.target.files[0]; if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        let w = img.width, h = img.height;
+                        const maxW = 300;
+                        if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+                        canvas.width = w; canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
+                        selectedImageData = canvas.toDataURL('image/jpeg', 0.5);
+                        document.getElementById('imagePreview').src = selectedImageData;
+                        document.getElementById('imagePreview').classList.add('show');
+                        document.getElementById('removeImageBtn').classList.add('show');
+                    };
+                    img.src = ev.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+            document.getElementById('removeImageBtn').addEventListener('click', function() {
+                selectedImageData = null;
+                document.getElementById('imagePreview').classList.remove('show');
+                this.classList.remove('show');
+                document.getElementById('prodImageFile').value = '';
+            });
+
+            document.getElementById('shareBtn').addEventListener('click', () => {
+                const url = window.location.href;
+                const msg = `¡Hola! 💊 Te invito a ver el catálogo de Farma Kai.\n📍 Servicio a domicilio.\n📞 Tel: ${CONFIG.whatsappNumber}\nHaz tu pedido por aquí: ${url}`;
+                window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+            });
+            
+            // ================================================================
+            // CÁMARA
+            // ================================================================
+            let cameraStream = null;
+
+            document.getElementById('openCameraBtn').addEventListener('click', async function() {
+                const cameraModal = document.getElementById('cameraModal');
+                cameraModal.classList.add('open');
+                try {
+                    cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                    document.getElementById('cameraVideo').srcObject = cameraStream;
+                } catch (err) {
+                    console.error("Error al acceder a la cámara: ", err);
+                    showToast('⚠️ No se pudo acceder a la cámara');
+                    cameraModal.classList.remove('open');
+                }
+            });
+
+            document.getElementById('closeCameraBtn').addEventListener('click', function() {
+                stopCameraStream();
+                document.getElementById('cameraModal').classList.remove('open');
+            });
+
+            document.getElementById('captureBtn').addEventListener('click', function() {
+                const video = document.getElementById('cameraVideo');
+                const canvas = document.getElementById('cameraCanvas');
+                const context = canvas.getContext('2d');
+
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+
+                const img = new Image();
+                img.onload = function() {
+                    const tempCanvas = document.createElement('canvas');
+                    let w = img.width, h = img.height;
+                    const maxW = 300; 
+                    if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+                    tempCanvas.width = w; tempCanvas.height = h;
+                    const ctx = tempCanvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+                    
+                    selectedImageData = tempCanvas.toDataURL('image/jpeg', 0.5);
+                    
+                    document.getElementById('imagePreview').src = selectedImageData;
+                    document.getElementById('imagePreview').classList.add('show');
+                    document.getElementById('removeImageBtn').classList.add('show');
+                    
+                    stopCameraStream();
+                    document.getElementById('cameraModal').classList.remove('open');
+                    
+                    showToast('✅ Foto capturada');
+                };
+                img.src = dataUrl;
+            });
+
+            function stopCameraStream() {
+                if (cameraStream) {
+                    cameraStream.getTracks().forEach(track => track.stop());
+                    cameraStream = null;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
